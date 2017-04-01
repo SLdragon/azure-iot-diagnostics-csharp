@@ -1,0 +1,9 @@
+TestResults/
+IoTDeviceSDKWrapper/bin/
+IoTDeviceSDKWrapper/obj/
+IoTDeviceSDKWrapper.Test/bin/
+IoTDeviceSDKWrapper.Test/obj/
+Sample/bin/
+Sample/obj/
+packages/
+
