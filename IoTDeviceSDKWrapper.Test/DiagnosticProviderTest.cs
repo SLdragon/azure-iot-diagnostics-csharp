@@ -1,15 +1,10 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using IoTDeviceSDKWrapper.DiagnosticProvider;
 using IoTDeviceSDKWrapper.Exceptions;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+
 namespace IoTDeviceSDKWrapper.Test
 {
     /// <summary>
