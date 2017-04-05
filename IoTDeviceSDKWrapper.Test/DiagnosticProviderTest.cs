@@ -1,11 +1,10 @@
-﻿using System.Diagnostics;
-using IoTDeviceSDKWrapper.DiagnosticProvider;
-using IoTDeviceSDKWrapper.Exceptions;
-using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.Azure.Devices.Client.DiagnosticProvider;
+using Microsoft.Azure.Devices.Client.Exceptions;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
-namespace IoTDeviceSDKWrapper.Test
+namespace Microsoft.Azure.Devices.Client.Test
 {
     /// <summary>
     /// Summary description for DiagnosticProviderTest
@@ -16,8 +15,8 @@ namespace IoTDeviceSDKWrapper.Test
         [TestMethod]
         public void DoNotSamplingWhenSamplingSourceIsNone()
         {
-            var diagnosticProvider=new ContinuousDiagnosticProvider(SamplingRateSource.None);
-            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
+            var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.None);
+            Assert.AreEqual(diagnosticProvider.SamplingOn, false);
             for (var i = 0; i < 100; i++)
             {
                 diagnosticProvider.Process(new Message());
@@ -29,7 +28,7 @@ namespace IoTDeviceSDKWrapper.Test
         public void DoNotSamplingWhenNeedSamplingIsFalse()
         {
             var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.None);
-            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
+            Assert.AreEqual(diagnosticProvider.SamplingOn, false);
             for (var i = 0; i < 100; i++)
             {
                 diagnosticProvider.Process(new Message());
@@ -46,7 +45,7 @@ namespace IoTDeviceSDKWrapper.Test
         }
 
         [TestMethod]
-        public void ThrowExceptionWhenInvalidTwin()
+        public void SetDefaultValueWhenReceivedInvalidTwin()
         {
             var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Server);
 
@@ -54,26 +53,28 @@ namespace IoTDeviceSDKWrapper.Test
             twin.Properties.Desired["diag_enableInvalid"] = true;
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagSamplingRateKey] = 10;
 
-            Assert.ThrowsException<InvalidDiagTwinException>(() =>
-            {
-                diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
-            });
+
+            diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
+            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
+            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,0);
+           
 
             twin = new Twin();
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagEnableKey] = "dddd";
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagSamplingRateKey] = 10;
-            Assert.ThrowsException<InvalidDiagTwinException>(() =>
-            {
-                diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
-            });
+
+            diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
+            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
+
 
             twin = new Twin();
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagEnableKey] = true;
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagSamplingRateKey] = "xxx";
-            Assert.ThrowsException<InvalidDiagTwinException>(() =>
-            {
-                diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
-            });
+
+
+            diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
+            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,0);
+            
 
             twin = new Twin();
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagEnableKey] = true;
@@ -90,19 +91,19 @@ namespace IoTDeviceSDKWrapper.Test
 
             Assert.ThrowsException<SamplingPercentageOutOfRangeException>(() =>
             {
-                 diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, -1);
+                diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, -1);
             });
 
             Assert.ThrowsException<SamplingPercentageOutOfRangeException>(() =>
             {
-                 diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 101);
+                diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 101);
             });
         }
 
         [TestMethod]
         public void ThrowExceptionWhenUserMessageHasReservedProperty()
         {
-            var diagnosticProvider=new ProbabilityDiagnosticProvider(SamplingRateSource.Client,100);
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 100);
 
             Assert.ThrowsException<PropertyConflictException>(() =>
             {
@@ -129,36 +130,36 @@ namespace IoTDeviceSDKWrapper.Test
         [TestMethod]
         public void ProbabilityDiagnosticProviderTest()
         {
-            var diagnosticProvider=new ProbabilityDiagnosticProvider(SamplingRateSource.Client,100);
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 100);
             for (var i = 0; i < 10000; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), true);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), true);
             }
 
-            diagnosticProvider=new ProbabilityDiagnosticProvider(SamplingRateSource.Client,0);
+            diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 0);
             for (var i = 0; i < 10000; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), false);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), false);
             }
 
             diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 50);
             var needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.NeedSampling(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
                 {
                     needSamplingCount++;
                 }
             }
-            Trace.WriteLine("Need sampling count:"+needSamplingCount);
+            Trace.WriteLine("Need sampling count:" + needSamplingCount);
             var permissibleError = 0.2;
-            Assert.IsTrue(needSamplingCount/1000000.0>0.5- permissibleError && needSamplingCount/1000000.0<0.5+permissibleError);
+            Assert.IsTrue(needSamplingCount / 1000000.0 > 0.5 - permissibleError && needSamplingCount / 1000000.0 < 0.5 + permissibleError);
 
             diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 25);
             needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.NeedSampling(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
                 {
                     needSamplingCount++;
                 }
@@ -169,7 +170,7 @@ namespace IoTDeviceSDKWrapper.Test
             needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.NeedSampling(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
                 {
                     needSamplingCount++;
                 }
@@ -185,53 +186,53 @@ namespace IoTDeviceSDKWrapper.Test
             var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 100);
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), true);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), true);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 0);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), false);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), false);
             }
 
-            diagnosticProvider =new ContinuousDiagnosticProvider(SamplingRateSource.Client,50);
+            diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 50);
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), i % 2 != 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), i % 2 != 0);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 25);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), (i - 1) % 4 == 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), (i - 1) % 4 == 0);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 20);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.NeedSampling(i), (i - 1) % 5 == 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), (i - 1) % 5 == 0);
             }
         }
 
         [TestMethod]
         public void ChangeSamplingRateWhenUseServerSamplingSourceAfterReceiveSettingsFromServer()
         {
-            var diagnosticProvider=new ProbabilityDiagnosticProvider(SamplingRateSource.Server);
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server);
             Assert.AreEqual(diagnosticProvider.SamplingRatePercentage, 0);
             var twin = new Twin();
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagEnableKey] = "True";
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagSamplingRateKey] = "10";
             diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
-            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,10);
+            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage, 10);
         }
 
         [TestMethod]
         public void DoNotChangeSamplingRateWhenUseClientSamlingSourceAfterReceiveSettingsFromServer()
         {
-            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server,50);
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server, 50);
             Assert.AreEqual(diagnosticProvider.SamplingRatePercentage, 0);
             var twin = new Twin();
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagEnableKey] = "True";
@@ -244,7 +245,7 @@ namespace IoTDeviceSDKWrapper.Test
         public void SamplingSwitchIsNotOnWhenSamplingSourceIsNone()
         {
             var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.None, 50);
-            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
+            Assert.AreEqual(diagnosticProvider.SamplingOn, false);
         }
 
         [TestMethod]
@@ -269,7 +270,5 @@ namespace IoTDeviceSDKWrapper.Test
             Assert.AreEqual(diagnosticProvider.SamplingOn, true);
             Assert.AreEqual(diagnosticProvider.SamplingRatePercentage, 10);
         }
-
-
     }
 }

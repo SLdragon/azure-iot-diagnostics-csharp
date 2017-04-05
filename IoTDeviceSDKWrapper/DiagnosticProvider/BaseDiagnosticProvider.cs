@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Microsoft.Azure.Devices.Client.Exceptions;
+using Microsoft.Azure.Devices.Shared;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
-using IoTDeviceSDKWrapper.Exceptions;
-using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices.Shared;
 
-namespace IoTDeviceSDKWrapper.DiagnosticProvider
+namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 {
     public abstract class BaseDiagnosticProvider : IDiagnosticProvider
     {
@@ -17,19 +16,16 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
         internal const string TwinDiagEnableKey = "diag_enable";
         internal const string TwinDiagSamplingRateKey = "diag_sample_rate";
 
-        private readonly SamplingRateSource _samplingRateSource;
-
-        public int SamplingRatePercentage { get; set; }
-        public bool SamplingOn { get; set; }
+        public int SamplingRatePercentage { get; private set; }
+        public bool SamplingOn { get; private set; }
         public int ProcessCount { get; private set; }
 
         private int SampledMessageCount { get; set; }
-
         private readonly string _diagVersion;
+        private readonly SamplingRateSource _samplingRateSource;
 
         protected BaseDiagnosticProvider(SamplingRateSource source = SamplingRateSource.None, int samplingRate = 0)
         {
-
             if (samplingRate < 0 || samplingRate > 100)
             {
                 throw new SamplingPercentageOutOfRangeException("Sampling rate percentage out of range, expected 0-100.");
@@ -56,10 +52,10 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
             }
         }
 
-        public Message Process(Message message)
+        public virtual Message Process(Message message)
         {
             ProcessCount++;
-            return SamplingOn && NeedSampling(ProcessCount) ? AddDiagnosticProperty(message) : message;
+            return SamplingOn && ShouldAddDiagnosticProperty(ProcessCount) ? AddDiagnosticProperty(message) : message;
         }
 
         public SamplingRateSource GetSamplingRateSource()
@@ -111,7 +107,10 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
 
             if (!desiredProperties.Contains(TwinDiagEnableKey) || !desiredProperties.Contains(TwinDiagSamplingRateKey))
             {
-                throw new InvalidDiagTwinException("Desired Properties do not contain diagnostic settings.");
+                Console.WriteLine("Desired Properties do not contain diagnostic settings. Set SamplingRatePercentage=0 ");
+                SamplingRatePercentage = 0;
+                SamplingOn = false;
+                return;
             }
 
 
@@ -119,14 +118,24 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
             string samplingRate = desiredProperties[TwinDiagSamplingRateKey].ToString();
             int percentage = 0;
 
-            if ((isEnabled != "TRUE" && isEnabled != "FALSE") || !int.TryParse(samplingRate, out percentage))
+            if (isEnabled != "TRUE" && isEnabled != "FALSE")
             {
-                throw new InvalidDiagTwinException("Desired Properties has invalid twin settings");
+                Console.WriteLine($"Desired Properties has invalid twin settings:diag_enable={isEnabled}, so disable diagnostic sampling.");
+                SamplingOn = false;
+                return;
+            }
+
+            if (!int.TryParse(samplingRate, out percentage))
+            {
+                Console.WriteLine($"Desired Properties has invalid twin settings:diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0.");
+                SamplingRatePercentage = 0;
+                return;
             }
 
             if (percentage < 0 || percentage > 100)
             {
-                throw new SamplingPercentageOutOfRangeException();
+                Console.WriteLine("Sampling Percentage out of range from server, so set SamplingRatePercentage=0.");
+                return;
             }
 
             SamplingOn = isEnabled == "TRUE";
@@ -148,7 +157,7 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
             return SampledMessageCount;
         }
 
-        public abstract bool NeedSampling(int count);
+        public abstract bool ShouldAddDiagnosticProperty(int count);
 
     }
 }

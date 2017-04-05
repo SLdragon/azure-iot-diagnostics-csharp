@@ -2,8 +2,7 @@
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IoTDeviceSDKWrapper;
-using IoTDeviceSDKWrapper.DiagnosticProvider;
+using Microsoft.Azure.Devices.Client.DiagnosticProvider;
 using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
 
@@ -14,10 +13,10 @@ namespace Sample
         private static readonly string deviceConnectionString = "HostName=RentuIoTHub.azure-devices.net;DeviceId=csharpsdk;SharedAccessKey=fsFw7xcuIVdJ79d09rzVPQ0SMv5k5fq1/ZlrsRUIQTc=";
         static void Main(string[] args)
         {
-            sendD2CMessage();
+            SendD2CMessage();
         }
 
-        private static void sendD2CMessage()
+        private static void SendD2CMessage()
         {
             var tokenSource = new CancellationTokenSource();
 
@@ -59,7 +58,7 @@ namespace Sample
                 var message = new Message(Encoding.ASCII.GetBytes(messageString));
                 await deviceClient.SendEventAsync(message);
                 Console.WriteLine("{0} > Sending message: {1} | Count:{2}", DateTime.Now, messageString, diagnosticProvider.ProcessCount);
-                await Task.Delay(500);
+                await Task.Delay(500, cancelToken);
             }
         }
     }

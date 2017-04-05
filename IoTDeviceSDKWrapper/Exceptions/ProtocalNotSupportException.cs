@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IoTDeviceSDKWrapper.Exceptions
+namespace Microsoft.Azure.Devices.Client.Exceptions
 {
     public class ProtocalNotSupportException : Exception
     {
@@ -8,11 +8,11 @@ namespace IoTDeviceSDKWrapper.Exceptions
         {
         }
 
-        public ProtocalNotSupportException(string message): base(message)
+        public ProtocalNotSupportException(string message) : base(message)
         {
         }
 
-        public ProtocalNotSupportException(string message, Exception inner): base(message, inner)
+        public ProtocalNotSupportException(string message, Exception inner) : base(message, inner)
         {
         }
     }
