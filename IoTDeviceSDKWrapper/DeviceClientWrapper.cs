@@ -28,7 +28,7 @@ namespace Microsoft.Azure.Devices.Client
         private readonly IDiagnosticProvider _diagnosticProvider;
         private DesiredPropertyUpdateCallback _userDesiredPropertyUpdateCallback;
 
-        internal DesiredPropertyUpdateCallback CallbackWrapper;
+        internal DesiredPropertyUpdateCallback callbackWrapper;
 
         private DeviceClientWrapper(DeviceClient deviceClient, IDiagnosticProvider diagnosticProvider)
         {
@@ -43,69 +43,52 @@ namespace Microsoft.Azure.Devices.Client
             }
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, IDiagnosticProvider diagnosticProvider)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, IDiagnosticProvider diagnosticProvider = null)
         {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString)
+        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, IDiagnosticProvider diagnosticProvider = null)
         {
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return CreateFromConnectionString(connectionString, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod)
-        {
-            var deviceClient = DeviceClient.Create(hostname, authenticationMethod);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, IDiagnosticProvider diagnosticProvider)
-        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var deviceClient = DeviceClient.Create(hostname, authenticationMethod);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, [ReadOnlyArray] ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
         {
-            var deviceClient = DeviceClient.Create(hostname, authenticationMethod, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider)
-        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var deviceClient = DeviceClient.Create(hostname, authenticationMethod, transportSettings);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, IDiagnosticProvider diagnosticProvider = null)
         {
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, TransportType.Mqtt);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, IDiagnosticProvider diagnosticProvider)
-        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, TransportType.Mqtt);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, [ReadOnlyArray] ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
         {
-            var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
-            transportSettings = new[] { mqttTransportSetting };
-
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider)
-        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
             transportSettings = new[] { mqttTransportSetting };
 
@@ -113,18 +96,12 @@ namespace Microsoft.Azure.Devices.Client
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, [ReadOnlyArray] ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
         {
-            var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
-            transportSettings = new[] { mqttTransportSetting };
-
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider)
-        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
             transportSettings = new[] { mqttTransportSetting };
 
@@ -226,7 +203,7 @@ namespace Microsoft.Azure.Devices.Client
                     }
                 });
             };
-            CallbackWrapper = callbackWrapper;
+            this.callbackWrapper = callbackWrapper;
             return _deviceClient.SetDesiredPropertyUpdateCallback(callbackWrapper, userContext);
         }
 

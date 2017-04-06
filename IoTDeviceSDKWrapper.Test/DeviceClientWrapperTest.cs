@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Devices.Client.Test
             var twin = new Twin();
             twin.Properties.Desired["diag_enable"] = "true";
             twin.Properties.Desired["diag_sample_rate"] = "10";
-            deviceClient.CallbackWrapper(new TwinCollection(), new object());
+            deviceClient.callbackWrapper(new TwinCollection(), new object());
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace Microsoft.Azure.Devices.Client.Test
             deviceClient.SetDesiredPropertyUpdateCallback(userCallback, new object());
             var twin = new Twin();
             twin.Properties.Desired["custom_settings"] = "xxxx";
-            deviceClient.CallbackWrapper(twin.Properties.Desired, new object());
+            deviceClient.callbackWrapper(twin.Properties.Desired, new object());
             userCallback.Received(1).Invoke(Arg.Any<TwinCollection>(), Arg.Any<Object>());
         }
 
@@ -79,8 +79,8 @@ namespace Microsoft.Azure.Devices.Client.Test
         {
             var deviceClient = DeviceClientWrapper.CreateFromConnectionString(fakeConnectionString);
             var diagnosticProvider = deviceClient.GetDiagnosticProvider();
-            Assert.AreEqual(diagnosticProvider.GetSamplingRateSource(),SamplingRateSource.None);
-            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,0);
+            Assert.AreEqual(diagnosticProvider.GetSamplingRateSource(), SamplingRateSource.None);
+            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage, 0);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
     public interface IDiagnosticProvider
     {
         Message Process(Message message);
-        bool ShouldAddDiagnosticProperty(int count);
+        bool ShouldAddDiagnosticProperties(int count);
         bool SamplingOn { get; }
         int SamplingRatePercentage { get; }
         SamplingRateSource GetSamplingRateSource();

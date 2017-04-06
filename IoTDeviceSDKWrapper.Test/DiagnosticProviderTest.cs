@@ -133,20 +133,20 @@ namespace Microsoft.Azure.Devices.Client.Test
             var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 100);
             for (var i = 0; i < 10000; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), true);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), true);
             }
 
             diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 0);
             for (var i = 0; i < 10000; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), false);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), false);
             }
 
             diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 50);
             var needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperties(i))
                 {
                     needSamplingCount++;
                 }
@@ -159,7 +159,7 @@ namespace Microsoft.Azure.Devices.Client.Test
             needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperties(i))
                 {
                     needSamplingCount++;
                 }
@@ -170,7 +170,7 @@ namespace Microsoft.Azure.Devices.Client.Test
             needSamplingCount = 0;
             for (var i = 0; i < 1000000; i++)
             {
-                if (diagnosticProvider.ShouldAddDiagnosticProperty(i))
+                if (diagnosticProvider.ShouldAddDiagnosticProperties(i))
                 {
                     needSamplingCount++;
                 }
@@ -186,34 +186,34 @@ namespace Microsoft.Azure.Devices.Client.Test
             var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 100);
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), true);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), true);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 0);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), false);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), false);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 50);
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), i % 2 != 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), i % 2 != 0);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 25);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), (i - 1) % 4 == 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), (i - 1) % 4 == 0);
             }
 
             diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Client, 20);
 
             for (var i = 1; i <= 100; i++)
             {
-                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperty(i), (i - 1) % 5 == 0);
+                Assert.AreEqual(diagnosticProvider.ShouldAddDiagnosticProperties(i), (i - 1) % 5 == 0);
             }
         }
 

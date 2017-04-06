@@ -8,7 +8,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
         {
         }
 
-        public override bool ShouldAddDiagnosticProperty(int count)
+        public override bool ShouldAddDiagnosticProperties(int count)
         {
             return Math.Floor((count - 2) * SamplingRatePercentage / 100.0) < Math.Floor((count - 1) * SamplingRatePercentage / 100.0);
         }

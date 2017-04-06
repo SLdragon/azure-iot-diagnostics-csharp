@@ -52,10 +52,10 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
             }
         }
 
-        public virtual Message Process(Message message)
+        public Message Process(Message message)
         {
             ProcessCount++;
-            return SamplingOn && ShouldAddDiagnosticProperty(ProcessCount) ? AddDiagnosticProperty(message) : message;
+            return SamplingOn && ShouldAddDiagnosticProperties(ProcessCount) ? AddDiagnosticProperty(message) : message;
         }
 
         public SamplingRateSource GetSamplingRateSource()
@@ -120,21 +120,22 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 
             if (isEnabled != "TRUE" && isEnabled != "FALSE")
             {
-                Console.WriteLine($"Desired Properties has invalid twin settings:diag_enable={isEnabled}, so disable diagnostic sampling.");
+                Console.WriteLine($"Desired Properties has invalid twin settings: diag_enable={isEnabled}, so disable diagnostic sampling and ignore diag_sample_rate setting.");
                 SamplingOn = false;
                 return;
             }
 
             if (!int.TryParse(samplingRate, out percentage))
             {
-                Console.WriteLine($"Desired Properties has invalid twin settings:diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0.");
+                Console.WriteLine($"Desired Properties has invalid twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
                 SamplingRatePercentage = 0;
                 return;
             }
 
             if (percentage < 0 || percentage > 100)
             {
-                Console.WriteLine("Sampling Percentage out of range from server, so set SamplingRatePercentage=0.");
+                Console.WriteLine($"Sampling Percentage out of range (0-100) from twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
+                SamplingRatePercentage = 0;
                 return;
             }
 
@@ -157,7 +158,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
             return SampledMessageCount;
         }
 
-        public abstract bool ShouldAddDiagnosticProperty(int count);
+        public abstract bool ShouldAddDiagnosticProperties(int count);
 
     }
 }
