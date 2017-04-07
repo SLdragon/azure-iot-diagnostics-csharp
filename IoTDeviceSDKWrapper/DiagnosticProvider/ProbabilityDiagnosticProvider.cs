@@ -1,15 +1,16 @@
 ﻿using System;
 
-namespace IoTDeviceSDKWrapper.DiagnosticProvider
+namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 {
-    public class ProbabilityDiagnosticProvider:BaseDiagnosticProvider
+    public class ProbabilityDiagnosticProvider : BaseDiagnosticProvider
     {
-        public ProbabilityDiagnosticProvider(SamplingRateSource source = SamplingRateSource.None, int samplingRate = 0):base(source,samplingRate)
+        private readonly Random _random = new Random();
+        public ProbabilityDiagnosticProvider(SamplingRateSource source = SamplingRateSource.None, int samplingRate = 0) : base(source, samplingRate)
         {
         }
-        public override bool NeedSampling(int count)
+        public override bool ShouldAddDiagnosticProperties(int count)
         {
-            var randomNumber = new Random().Next(1, 101);
+            var randomNumber = _random.Next(1, 101);
             return randomNumber <= SamplingRatePercentage;
         }
     }

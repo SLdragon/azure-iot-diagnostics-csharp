@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Devices.Client;
 
-namespace IoTDeviceSDKWrapper.DiagnosticProvider
+namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 {
     public enum SamplingRateSource
     {
@@ -11,13 +11,10 @@ namespace IoTDeviceSDKWrapper.DiagnosticProvider
     public interface IDiagnosticProvider
     {
         Message Process(Message message);
-        bool NeedSampling(int count);
-        bool SamplingOn { get; set; }
-       int SamplingRatePercentage { get; set; }
+        bool ShouldAddDiagnosticProperties(int count);
+        bool SamplingOn { get; }
+        int SamplingRatePercentage { get; }
         SamplingRateSource GetSamplingRateSource();
         int GetSampledCount();
-
-        // void SetSamplingConfigFromTwin(TwinCollection desiredProperties);
-        //Task OnDesiredPropertyChange(TwinCollection desiredProperties, object userContext);
     }
 }

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using IoTDeviceSDKWrapper.DiagnosticProvider;
-using IoTDeviceSDKWrapper.Exceptions;
+using Microsoft.Azure.Devices.Client.DiagnosticProvider;
+using Microsoft.Azure.Devices.Client.Exceptions;
 
-namespace IoTDeviceSDKWrapper
+namespace Microsoft.Azure.Devices.Client
 {
     public class DeviceClientWrapper
     {
@@ -28,9 +28,9 @@ namespace IoTDeviceSDKWrapper
         private readonly IDiagnosticProvider _diagnosticProvider;
         private DesiredPropertyUpdateCallback _userDesiredPropertyUpdateCallback;
 
-        internal DesiredPropertyUpdateCallback CallbackWrapper;
+        internal DesiredPropertyUpdateCallback callbackWrapper;
 
-        private  DeviceClientWrapper(DeviceClient deviceClient,IDiagnosticProvider diagnosticProvider)
+        private DeviceClientWrapper(DeviceClient deviceClient, IDiagnosticProvider diagnosticProvider)
         {
             _deviceClient = deviceClient;
             _diagnosticProvider = diagnosticProvider;
@@ -42,77 +42,70 @@ namespace IoTDeviceSDKWrapper
                 });
             }
         }
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, IDiagnosticProvider diagnosticProvider)
+
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, IDiagnosticProvider diagnosticProvider = null)
         {
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString,TransportType.Mqtt);
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
+            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, TransportType.Mqtt);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod)
+        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, IDiagnosticProvider diagnosticProvider = null)
         {
-            var deviceClient=DeviceClient.Create(hostname, authenticationMethod);
-            var diagnosticProvider=new ContinuousDiagnosticProvider();
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
+            var deviceClient = DeviceClient.Create(hostname, authenticationMethod);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, [ReadOnlyArray] ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper Create(string hostname, IAuthenticationMethod authenticationMethod, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
         {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var deviceClient = DeviceClient.Create(hostname, authenticationMethod, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return new DeviceClientWrapper(deviceClient,diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString)
-        {
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
-            return CreateFromConnectionString(connectionString, diagnosticProvider);
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId)
-        {
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, TransportType.Mqtt);
-            var diagnosticProvider=new ContinuousDiagnosticProvider();
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, [ReadOnlyArray] ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, IDiagnosticProvider diagnosticProvider = null)
         {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
+            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, TransportType.Mqtt);
+            return new DeviceClientWrapper(deviceClient, diagnosticProvider);
+        }
+
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
+        {
+            if (diagnosticProvider == null)
+            {
+                diagnosticProvider = new ContinuousDiagnosticProvider();
+            }
             var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
-            transportSettings =new[]{ mqttTransportSetting };
+            transportSettings = new[] { mqttTransportSetting };
 
             var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
-        private static ITransportSettings GetMqttTransportSettings(ITransportSettings[] transportSettings)
+        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, [ReadOnlyArray] ITransportSettings[] transportSettings, IDiagnosticProvider diagnosticProvider = null)
         {
-            ITransportSettings mqttTransportSetting = null;
-            foreach (var transportSetting in transportSettings)
+            if (diagnosticProvider == null)
             {
-                var setting = transportSetting.GetTransportType();
-                if (setting != TransportType.Mqtt && setting != TransportType.Mqtt_Tcp_Only && setting != TransportType.Mqtt_WebSocket_Only)
-                {
-                    continue;
-                }
-                mqttTransportSetting = transportSetting;
+                diagnosticProvider = new ContinuousDiagnosticProvider();
             }
-
-            if (mqttTransportSetting == null)
-            {
-                throw new ProtocalNotSupportException("Cannot find MQTT protocal in transport settings: diagnostic only support MQTT protocal");
-            }
-
-            return mqttTransportSetting;
-        }
-
-        public static DeviceClientWrapper CreateFromConnectionString(string connectionString, string deviceId, [ReadOnlyArray] ITransportSettings[] transportSettings)
-        {
             var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
             transportSettings = new[] { mqttTransportSetting };
 
             var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, transportSettings);
-            var diagnosticProvider = new ContinuousDiagnosticProvider();
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
@@ -203,17 +196,17 @@ namespace IoTDeviceSDKWrapper
                     {
                         _userDesiredPropertyUpdateCallback(desiredProperties, context);
                     }
-                    
+
                     if (_diagnosticProvider.GetSamplingRateSource() == SamplingRateSource.Server)
                     {
-                       ((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange(desiredProperties, context);
+                        ((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange(desiredProperties, context);
                     }
                 });
             };
-            CallbackWrapper = callbackWrapper;
+            this.callbackWrapper = callbackWrapper;
             return _deviceClient.SetDesiredPropertyUpdateCallback(callbackWrapper, userContext);
         }
-        
+
         [Obsolete("Please use SetMethodHandlerAsync.")]
         public void SetMethodHandler(string methodName, MethodCallback methodHandler, object userContext)
         {
@@ -239,11 +232,37 @@ namespace IoTDeviceSDKWrapper
             return _deviceClient;
         }
 
+        public IDiagnosticProvider GetDiagnosticProvider()
+        {
+            return _diagnosticProvider;
+        }
+
         private async Task StartListenPropertiesChange(DeviceClient deviceClient)
         {
             var twin = await deviceClient.GetTwinAsync();
             ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
             await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
+        }
+
+        private static ITransportSettings GetMqttTransportSettings(ITransportSettings[] transportSettings)
+        {
+            ITransportSettings mqttTransportSetting = null;
+            foreach (var transportSetting in transportSettings)
+            {
+                var setting = transportSetting.GetTransportType();
+                if (setting != TransportType.Mqtt && setting != TransportType.Mqtt_Tcp_Only && setting != TransportType.Mqtt_WebSocket_Only)
+                {
+                    continue;
+                }
+                mqttTransportSetting = transportSetting;
+            }
+
+            if (mqttTransportSetting == null)
+            {
+                throw new ProtocalNotSupportException("Cannot find MQTT protocal in transport settings: diagnostic only support MQTT protocal");
+            }
+
+            return mqttTransportSetting;
         }
     }
 }
