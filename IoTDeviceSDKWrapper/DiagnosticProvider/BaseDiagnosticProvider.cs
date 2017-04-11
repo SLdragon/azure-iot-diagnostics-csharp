@@ -143,12 +143,8 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
                     return;
                 }
 
-                if (samplingRate != null)
-                {
-                    SamplingRatePercentage = int.Parse(samplingRate);
-                }
+                SamplingRatePercentage = percentage;
             }
-
         }
 
         internal Task OnDesiredPropertyChange(TwinCollection desiredProperties, object userContext)
@@ -158,6 +154,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
                 SetSamplingConfigFromTwin(desiredProperties);
             });
         }
+
         public int GetSampledCount()
         {
             return SampledMessageCount;

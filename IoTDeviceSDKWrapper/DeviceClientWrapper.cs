@@ -27,8 +27,8 @@ namespace Microsoft.Azure.Devices.Client
         private readonly IDiagnosticProvider _diagnosticProvider;
         private DesiredPropertyUpdateCallback _userDesiredPropertyUpdateCallback;
         private readonly int _retryCount = 3;
-        private readonly int _delayTimeLowerLimit = 5 * 60 * 100;
-        private readonly int _delayTimeUpperLimit = 30 * 60 * 100;
+        private readonly int _retryAfterMilisecondLowerBound = 10 * 1000;
+        private readonly int _retryAfterMilisecondUpperBound = 30 * 60 * 1000;
 
         internal DesiredPropertyUpdateCallback callbackWrapper;
 
@@ -252,7 +252,7 @@ namespace Microsoft.Azure.Devices.Client
                 catch (Exception e)
                 {
                     retryCountRemain--;
-                    var randomDelayTime = new Random().Next(_delayTimeLowerLimit, _delayTimeUpperLimit);
+                    var randomDelayTime = new Random().Next(_retryAfterMilisecondLowerBound, _retryAfterMilisecondUpperBound);
                     await Task.Delay(randomDelayTime);
                     if (retryCountRemain < 0)
                     {
