@@ -26,6 +26,9 @@ namespace Microsoft.Azure.Devices.Client
         private readonly DeviceClient _deviceClient;
         private readonly IDiagnosticProvider _diagnosticProvider;
         private DesiredPropertyUpdateCallback _userDesiredPropertyUpdateCallback;
+        private readonly int _retryCount = 3;
+        private readonly int _delayTimeLowerLimit = 5 * 60 * 100;
+        private readonly int _delayTimeUpperLimit = 30 * 60 * 100;
 
         internal DesiredPropertyUpdateCallback callbackWrapper;
 
@@ -197,7 +200,7 @@ namespace Microsoft.Azure.Devices.Client
                     }
 
                     _userDesiredPropertyUpdateCallback(desiredProperties, context);
-                    
+
                 });
             };
             this.callbackWrapper = callbackWrapper;
@@ -236,9 +239,29 @@ namespace Microsoft.Azure.Devices.Client
 
         private async Task StartListenPropertiesChange(DeviceClient deviceClient)
         {
-            var twin = await deviceClient.GetTwinAsync();
-            ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
-            await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
+            var retryCountRemain = _retryCount;
+            while (true)
+            {
+                try
+                {
+                    var twin = await deviceClient.GetTwinAsync();
+                    ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
+                    await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    retryCountRemain--;
+                    var randomDelayTime = new Random().Next(_delayTimeLowerLimit, _delayTimeUpperLimit);
+                    await Task.Delay(randomDelayTime);
+                    if (retryCountRemain < 0)
+                    {
+                        Console.WriteLine("Error occur when get twin settings from server:\n" + e.Message + "\nStop retry and ignore diagnostic.");
+                        break;
+                    }
+                    Console.WriteLine("Error occur when get twin settings from server:\n" + e.Message + "\nRetry...");
+                }
+            }
         }
 
         private static ITransportSettings GetMqttTransportSettings(ITransportSettings[] transportSettings)
