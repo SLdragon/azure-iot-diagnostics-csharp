@@ -50,13 +50,13 @@ namespace Microsoft.Azure.Devices.Client.Test
             var diagnosticProvider = new ContinuousDiagnosticProvider(SamplingRateSource.Server);
 
             var twin = new Twin();
-            twin.Properties.Desired["diag_enableInvalid"] = true;
+            twin.Properties.Desired["diag_enableInvalid"] = false;
             twin.Properties.Desired[BaseDiagnosticProvider.TwinDiagSamplingRateKey] = 10;
 
 
             diagnosticProvider.SetSamplingConfigFromTwin(twin.Properties.Desired);
-            Assert.AreEqual(diagnosticProvider.SamplingOn,false);
-            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,0);
+            Assert.AreEqual(diagnosticProvider.SamplingOn,true);
+            Assert.AreEqual(diagnosticProvider.SamplingRatePercentage,10);
            
 
             twin = new Twin();

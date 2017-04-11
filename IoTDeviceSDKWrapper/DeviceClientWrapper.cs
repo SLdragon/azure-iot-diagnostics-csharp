@@ -1,12 +1,11 @@
-﻿using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.Azure.Devices.Client.DiagnosticProvider;
+using Microsoft.Azure.Devices.Client.Exceptions;
 using Microsoft.Azure.Devices.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Microsoft.Azure.Devices.Client.DiagnosticProvider;
-using Microsoft.Azure.Devices.Client.Exceptions;
 
 namespace Microsoft.Azure.Devices.Client
 {
@@ -192,15 +191,13 @@ namespace Microsoft.Azure.Devices.Client
             {
                 return Task.Run(() =>
                 {
-                    if (!(desiredProperties.Contains(BaseDiagnosticProvider.TwinDiagEnableKey) || desiredProperties.Contains(BaseDiagnosticProvider.TwinDiagSamplingRateKey)))
-                    {
-                        _userDesiredPropertyUpdateCallback(desiredProperties, context);
-                    }
-
                     if (_diagnosticProvider.GetSamplingRateSource() == SamplingRateSource.Server)
                     {
                         ((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange(desiredProperties, context);
                     }
+
+                    _userDesiredPropertyUpdateCallback(desiredProperties, context);
+                    
                 });
             };
             this.callbackWrapper = callbackWrapper;

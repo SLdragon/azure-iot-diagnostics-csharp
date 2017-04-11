@@ -105,45 +105,50 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
                 return;
             }
 
-            if (!desiredProperties.Contains(TwinDiagEnableKey) || !desiredProperties.Contains(TwinDiagSamplingRateKey))
+            if (!desiredProperties.Contains(TwinDiagEnableKey) && !desiredProperties.Contains(TwinDiagSamplingRateKey))
             {
-                Console.WriteLine("Desired Properties do not contain diagnostic settings. Set SamplingRatePercentage=0 ");
-                SamplingRatePercentage = 0;
-                SamplingOn = false;
+                Console.WriteLine("Desired Properties do not contain diagnostic settings. Ignore this twin");
                 return;
             }
 
-
-            var isEnabled = (string)(desiredProperties[TwinDiagEnableKey].ToString()).ToUpper();
-            string samplingRate = desiredProperties[TwinDiagSamplingRateKey].ToString();
-            int percentage = 0;
-
-            if (isEnabled != "TRUE" && isEnabled != "FALSE")
+            if (desiredProperties.Contains(TwinDiagEnableKey))
             {
-                Console.WriteLine($"Desired Properties has invalid twin settings: diag_enable={isEnabled}, so disable diagnostic sampling and ignore diag_sample_rate setting.");
-                SamplingOn = false;
-                return;
+                var isEnabled = (string)(desiredProperties[TwinDiagEnableKey].ToString()).ToUpper();
+
+                if (isEnabled != "TRUE" && isEnabled != "FALSE")
+                {
+                    Console.WriteLine($"Desired Properties has invalid twin settings: diag_enable={isEnabled}, so disable diagnostic sampling and ignore diag_sample_rate setting.");
+                    SamplingOn = false;
+                    return;
+                }
+                SamplingOn = isEnabled == "TRUE";
             }
 
-            if (!int.TryParse(samplingRate, out percentage))
+            if (desiredProperties.Contains(TwinDiagSamplingRateKey))
             {
-                Console.WriteLine($"Desired Properties has invalid twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
-                SamplingRatePercentage = 0;
-                return;
+                string samplingRate = desiredProperties[TwinDiagSamplingRateKey].ToString();
+                var percentage = 0;
+
+                if (!int.TryParse(samplingRate, out percentage))
+                {
+                    Console.WriteLine($"Desired Properties has invalid twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
+                    SamplingRatePercentage = 0;
+                    return;
+                }
+
+                if (percentage < 0 || percentage > 100)
+                {
+                    Console.WriteLine($"Sampling Percentage out of range (0-100) from twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
+                    SamplingRatePercentage = 0;
+                    return;
+                }
+
+                if (samplingRate != null)
+                {
+                    SamplingRatePercentage = int.Parse(samplingRate);
+                }
             }
 
-            if (percentage < 0 || percentage > 100)
-            {
-                Console.WriteLine($"Sampling Percentage out of range (0-100) from twin settings: diag_sample_rate={samplingRate}, so set SamplingRatePercentage=0 and ignore diag_enable setting.");
-                SamplingRatePercentage = 0;
-                return;
-            }
-
-            SamplingOn = isEnabled == "TRUE";
-            if (samplingRate != null)
-            {
-                SamplingRatePercentage = int.Parse(samplingRate);
-            }
         }
 
         internal Task OnDesiredPropertyChange(TwinCollection desiredProperties, object userContext)
