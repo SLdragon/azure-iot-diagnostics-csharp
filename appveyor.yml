@@ -1,12 +1,12 @@
 version: 1.0.{build}
 image: Visual Studio 2017
 configuration: Release
+nuget:
+  account_feed: true
+  project_feed: true
 install:
 - cmd: nuget restore IoTDeviceSDKWrapper.sln
 build:
   verbosity: minimal
-after_test:
-- ps: .\PackAndPush.ps1
-artifacts:
-- path: '*.nupkg'
-  name: NuGetPackage
+after_build:
+  - ps: .\PackAndPush.ps1
