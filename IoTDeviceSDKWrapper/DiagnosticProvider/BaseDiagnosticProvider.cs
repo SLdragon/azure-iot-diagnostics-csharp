@@ -18,7 +18,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 
         public int SamplingRatePercentage { get; private set; }
         public bool SamplingOn { get; private set; }
-        public int ProcessCount { get; private set; }
+        public int MessageNumber { get; set; }
 
         private int SampledMessageCount { get; set; }
         private readonly string _diagVersion;
@@ -31,7 +31,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
                 throw new SamplingPercentageOutOfRangeException("Sampling rate percentage out of range, expected 0-100.");
             }
 
-            ProcessCount = 0;
+            MessageNumber = 0;
             SamplingOn = true;
             SamplingRatePercentage = 0;
             SampledMessageCount = 0;
@@ -54,8 +54,14 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 
         public Message Process(Message message)
         {
-            ProcessCount++;
-            return SamplingOn && ShouldAddDiagnosticProperties(ProcessCount) ? AddDiagnosticProperty(message) : message;
+            var processedMessage=SamplingOn && ShouldAddDiagnosticProperties() ? AddDiagnosticProperty(message) : message;
+            OnProcessCompleted();
+            return processedMessage;
+        }
+
+        public virtual void OnProcessCompleted()
+        {
+            MessageNumber++;
         }
 
         public SamplingRateSource GetSamplingRateSource()
@@ -67,7 +73,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
         {
             CheckProperty(message);
             SampledMessageCount++;
-            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+            var timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
             message.Properties.Add(CorrelationIdKey, Guid.NewGuid().ToString());
             message.Properties.Add(TimeStampKey, timestamp);
             message.Properties.Add(VersionKey, _diagVersion);
@@ -160,7 +166,6 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
             return SampledMessageCount;
         }
 
-        public abstract bool ShouldAddDiagnosticProperties(int count);
-
+        public abstract bool ShouldAddDiagnosticProperties();
     }
 }
