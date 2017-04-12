@@ -13,7 +13,7 @@ nuget pack .\package.nuspec
 
 $packageName= "Microsoft.Azure.Devices.Client.Diagnostic.$versionStr.nupkg"
 
-nuget push $packageName -ApiKey sug2ag5x2q3upotsao652v7b -Source https://ci.appveyor.com/nuget/sldragon-2rf9mhnyx74v/api/v2/package
+appveyor PushArtifact $packageName
 
 Remove-Item .\package.nuspec
 
