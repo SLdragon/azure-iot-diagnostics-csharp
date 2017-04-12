@@ -25,12 +25,12 @@ Azure IoT Hub C# Device SDK with End-to-End Diagnostic library provides a conven
 
 ```cs
         private static readonly string deviceConnectionString = "{Your IoTHub device connection string}";
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            sendD2CMessage();
+            SendD2CMessage();
         }
 
-        private static void sendD2CMessage()
+        private static void SendD2CMessage()
         {
             var tokenSource = new CancellationTokenSource();
 
@@ -82,7 +82,7 @@ Azure IoT Hub C# Device SDK with End-to-End Diagnostic library provides a conven
 
 
 
-### A quick guide to develop End-to-End diagnostic C# SDK
+### A quick guide to set up End-to-End diagnostic C# SDK development environment
 
 1. git clone https://github.com/VSChina/azure-iot-diagnostics-csharp.git
 2. Open IoTDeviceSDKWrapper.sln using Visual Studio 2017
@@ -90,7 +90,7 @@ Azure IoT Hub C# Device SDK with End-to-End Diagnostic library provides a conven
 4. Right click IoTDeviceSDKWrapper.Test project, and select the context menu "Run Unit Tests"
 5. Right click Sample project, and select "Set as StartUp Project"
 6. Run project
-7. If you can see the messages in the console window, then the develop environment is ready.
+7. If you can see the messages in the console window, then the development environment is ready.
 
 
 ### Related project
