@@ -1,12 +1,11 @@
-﻿using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.Azure.Devices.Client.DiagnosticProvider;
+using Microsoft.Azure.Devices.Client.Exceptions;
 using Microsoft.Azure.Devices.Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Microsoft.Azure.Devices.Client.DiagnosticProvider;
-using Microsoft.Azure.Devices.Client.Exceptions;
 
 namespace Microsoft.Azure.Devices.Client
 {
@@ -27,6 +26,9 @@ namespace Microsoft.Azure.Devices.Client
         private readonly DeviceClient _deviceClient;
         private readonly IDiagnosticProvider _diagnosticProvider;
         private DesiredPropertyUpdateCallback _userDesiredPropertyUpdateCallback;
+        private readonly int _retryCount = 3;
+        private readonly int _retryAfterMilisecondLowerBound = 10 * 1000;
+        private readonly int _retryAfterMilisecondUpperBound = 30 * 60 * 1000;
 
         internal DesiredPropertyUpdateCallback callbackWrapper;
 
@@ -192,15 +194,13 @@ namespace Microsoft.Azure.Devices.Client
             {
                 return Task.Run(() =>
                 {
-                    if (!(desiredProperties.Contains(BaseDiagnosticProvider.TwinDiagEnableKey) || desiredProperties.Contains(BaseDiagnosticProvider.TwinDiagSamplingRateKey)))
-                    {
-                        _userDesiredPropertyUpdateCallback(desiredProperties, context);
-                    }
-
                     if (_diagnosticProvider.GetSamplingRateSource() == SamplingRateSource.Server)
                     {
                         ((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange(desiredProperties, context);
                     }
+
+                    _userDesiredPropertyUpdateCallback(desiredProperties, context);
+
                 });
             };
             this.callbackWrapper = callbackWrapper;
@@ -239,9 +239,29 @@ namespace Microsoft.Azure.Devices.Client
 
         private async Task StartListenPropertiesChange(DeviceClient deviceClient)
         {
-            var twin = await deviceClient.GetTwinAsync();
-            ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
-            await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
+            var retryCountRemain = _retryCount;
+            while (true)
+            {
+                try
+                {
+                    var twin = await deviceClient.GetTwinAsync();
+                    ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
+                    await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    retryCountRemain--;
+                    var randomDelayTime = new Random().Next(_retryAfterMilisecondLowerBound, _retryAfterMilisecondUpperBound);
+                    await Task.Delay(randomDelayTime);
+                    if (retryCountRemain < 0)
+                    {
+                        Console.WriteLine("Error occur when get twin settings from server:\n" + e.Message + "\nStop retry and ignore diagnostic.");
+                        break;
+                    }
+                    Console.WriteLine("Error occur when get twin settings from server:\n" + e.Message + "\nRetry...");
+                }
+            }
         }
 
         private static ITransportSettings GetMqttTransportSettings(ITransportSettings[] transportSettings)
