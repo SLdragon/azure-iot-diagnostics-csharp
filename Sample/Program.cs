@@ -10,8 +10,8 @@ namespace Sample
 {
     class Program
     {
-        private static readonly string deviceConnectionString = "HostName=RentuIoTHub.azure-devices.net;DeviceId=csharpsdk;SharedAccessKey=fsFw7xcuIVdJ79d09rzVPQ0SMv5k5fq1/ZlrsRUIQTc=";
-        static void Main(string[] args)
+        private static readonly string deviceConnectionString = "{Your IoTHub device connection string}";
+        public static void Main(string[] args)
         {
             SendD2CMessage();
         }
@@ -36,7 +36,7 @@ namespace Sample
         public static async Task SendDeviceToCloudMessageAsync(CancellationToken cancelToken)
         {
 
-            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Client, 50);
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server, 50);
             var deviceClient = DeviceClientWrapper.CreateFromConnectionString(deviceConnectionString, diagnosticProvider);
 
             const int avgWindSpeed = 10; // m/s
@@ -57,7 +57,7 @@ namespace Sample
                 var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
                 var message = new Message(Encoding.ASCII.GetBytes(messageString));
                 await deviceClient.SendEventAsync(message);
-                Console.WriteLine("{0} > Sending message: {1} | Count:{2}", DateTime.Now, messageString, diagnosticProvider.ProcessCount);
+                Console.WriteLine("{0} > Sending message: {1} | Count:{2}", DateTime.Now, messageString, diagnosticProvider.MessageNumber);
                 await Task.Delay(500, cancelToken);
             }
         }

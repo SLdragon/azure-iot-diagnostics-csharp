@@ -1,6 +1,4 @@
-﻿using Microsoft.Azure.Devices.Client;
-
-namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
+﻿namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
 {
     public enum SamplingRateSource
     {
@@ -8,10 +6,11 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
         Client,
         Server
     }
+
     public interface IDiagnosticProvider
     {
         Message Process(Message message);
-        bool ShouldAddDiagnosticProperties(int count);
+        bool ShouldAddDiagnosticProperties();
         bool SamplingOn { get; }
         int SamplingRatePercentage { get; }
         SamplingRateSource GetSamplingRateSource();

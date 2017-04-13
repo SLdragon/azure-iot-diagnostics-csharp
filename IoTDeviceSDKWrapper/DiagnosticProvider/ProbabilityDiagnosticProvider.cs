@@ -5,13 +5,22 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
     public class ProbabilityDiagnosticProvider : BaseDiagnosticProvider
     {
         private readonly Random _random = new Random();
+        private int _randomNum;
+
         public ProbabilityDiagnosticProvider(SamplingRateSource source = SamplingRateSource.None, int samplingRate = 0) : base(source, samplingRate)
         {
+            _randomNum = _random.Next(1, 101);
         }
-        public override bool ShouldAddDiagnosticProperties(int count)
+
+        public override bool ShouldAddDiagnosticProperties()
         {
-            var randomNumber = _random.Next(1, 101);
-            return randomNumber <= SamplingRatePercentage;
+            return _randomNum <= SamplingRatePercentage;
+        }
+
+        public override void OnProcessCompleted()
+        {
+            base.OnProcessCompleted();
+            _randomNum = _random.Next(1, 101);
         }
     }
 }
