@@ -112,20 +112,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiagnosticProvider\BaseDiagnosticProvider.cs" />
-    <Compile Include="DiagnosticProvider\ContinuousDiagnosticProvider.cs" />
-    <Compile Include="DeviceClientWrapper.cs" />
-    <Compile Include="Exceptions\InvalidDiagTwinException.cs" />
-    <Compile Include="Exceptions\SamplingPercentageOutOfRangeException.cs" />
-    <Compile Include="DiagnosticProvider\IDiagnosticProvider.cs" />
-    <Compile Include="DiagnosticProvider\ProbabilityDiagnosticProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Exceptions\PropertyConflictException.cs" />
-    <Compile Include="Exceptions\ProtocalNotSupportException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\IoTDeviceSDKWrapper.Shared\IoTDeviceSDKWrapper.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

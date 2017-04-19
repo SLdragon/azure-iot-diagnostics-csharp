@@ -1,0 +1,13 @@
+﻿{ 
+  "dependencies": {
+    "Microsoft.Azure.Devices.Client": "1.2.8",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.3"
+  },
+  "frameworks": {
+    "UAP,Version=v10.0.10240": {}
+  },
+  "runtimes": {
+    "win10-x86": {},
+    "win10-x64": {}
+  }
+}

@@ -36,8 +36,11 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
             SamplingRatePercentage = 0;
             SampledMessageCount = 0;
             _samplingRateSource = source;
+#if WINDOWS_UWP
+            _diagVersion = "0.1.0";
+#else
             _diagVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString().Substring(0, 5);
-
+#endif
             switch (source)
             {
                 case SamplingRateSource.Client:
