@@ -3,3 +3,5 @@ TestResults/
 **/bin/
 **/obj/
 packages/
+nuget/
+.vscode/

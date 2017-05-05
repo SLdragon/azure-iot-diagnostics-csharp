@@ -91,10 +91,9 @@ namespace Microsoft.Azure.Devices.Client
             {
                 diagnosticProvider = new ContinuousDiagnosticProvider();
             }
-            var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
-            transportSettings = new[] { mqttTransportSetting };
+            var mqttTransportSettings = GetMqttTransportSettings(transportSettings);
 
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, transportSettings);
+            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, mqttTransportSettings);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
@@ -104,10 +103,9 @@ namespace Microsoft.Azure.Devices.Client
             {
                 diagnosticProvider = new ContinuousDiagnosticProvider();
             }
-            var mqttTransportSetting = GetMqttTransportSettings(transportSettings);
-            transportSettings = new[] { mqttTransportSetting };
+            var mqttTransportSettings = GetMqttTransportSettings(transportSettings);
 
-            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, transportSettings);
+            var deviceClient = DeviceClient.CreateFromConnectionString(connectionString, deviceId, mqttTransportSettings);
             return new DeviceClientWrapper(deviceClient, diagnosticProvider);
         }
 
@@ -264,9 +262,9 @@ namespace Microsoft.Azure.Devices.Client
             }
         }
 
-        private static ITransportSettings GetMqttTransportSettings(ITransportSettings[] transportSettings)
+        private static ITransportSettings[] GetMqttTransportSettings(ITransportSettings[] transportSettings)
         {
-            ITransportSettings mqttTransportSetting = null;
+            List<ITransportSettings> mqttTransportSettings = new List<ITransportSettings>();
             foreach (var transportSetting in transportSettings)
             {
                 var setting = transportSetting.GetTransportType();
@@ -274,15 +272,15 @@ namespace Microsoft.Azure.Devices.Client
                 {
                     continue;
                 }
-                mqttTransportSetting = transportSetting;
+                mqttTransportSettings.Add(transportSetting);
             }
 
-            if (mqttTransportSetting == null)
+            if (mqttTransportSettings == null)
             {
                 throw new ProtocalNotSupportException("Cannot find MQTT protocal in transport settings: diagnostic only support MQTT protocal");
             }
 
-            return mqttTransportSetting;
+            return mqttTransportSettings.ToArray();
         }
     }
 }
