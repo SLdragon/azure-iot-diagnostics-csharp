@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.0
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTDeviceSDKWrapper", "IoTDeviceSDKWrapper\IoTDeviceSDKWrapper.csproj", "{4DD8CADA-9A21-42A9-8902-EAD9E97D338E}"
 EndProject
@@ -19,6 +19,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "IoTDeviceSDKWrapper.Shared", "IoTDeviceSDKWrapper.Shared\IoTDeviceSDKWrapper.Shared.shproj", "{69E7832F-EA91-4039-A5A7-AEB4E9117954}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTDeviceSDKWrapper.UWP", "IoTDeviceSDKWrapper.UWP\IoTDeviceSDKWrapper.UWP.csproj", "{E6E4FA0E-32A8-42A8-9170-64BC0FF5BA91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoadTest", "LoadTest\LoadTest.csproj", "{BD9384D0-7D26-45A9-B43A-7E8362A87592}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -101,6 +103,22 @@ Global
 		{E6E4FA0E-32A8-42A8-9170-64BC0FF5BA91}.Release|x64.Build.0 = Release|x64
 		{E6E4FA0E-32A8-42A8-9170-64BC0FF5BA91}.Release|x86.ActiveCfg = Release|x86
 		{E6E4FA0E-32A8-42A8-9170-64BC0FF5BA91}.Release|x86.Build.0 = Release|x86
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|ARM.Build.0 = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|x64.Build.0 = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Debug|x86.Build.0 = Debug|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|ARM.ActiveCfg = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|ARM.Build.0 = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|x64.ActiveCfg = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|x64.Build.0 = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|x86.ActiveCfg = Release|Any CPU
+		{BD9384D0-7D26-45A9-B43A-7E8362A87592}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
