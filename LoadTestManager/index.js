@@ -11,7 +11,7 @@ var path = require("path");
 var exeLocation = path.join(__dirname, '../', 'LoadTest\\bin\\Debug\\LoadTest.exe');
 
 var cmd2 = exeLocation + ' "%s" "%d"';
-var NUM_OF_DEVICES = 1;
+var NUM_OF_DEVICES = 20;
 var NUM_MESSAGE_PER_DEVICE = 10;
 var stat = {
     numExec: 0,
@@ -23,7 +23,15 @@ var stat = {
     devices: {}, // changed_times,msg_sent,msg_respond
 };
 
+const readline = require('readline');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 main();
+
+var processList = [];
 
 function main() {
     var deviceCS = [];
@@ -45,8 +53,10 @@ function main() {
                 }
             });
             console.log(util.format("Devices retrieved. (%d/%d)", deviceCS.length, NUM_OF_DEVICES));
+            var beforeSendTimeStamp = Date.now();
             for (var i = 0; i < NUM_OF_DEVICES; i++) {
-                exec(util.format(cmd2, deviceCS[i].cs, NUM_MESSAGE_PER_DEVICE), { maxBuffer: 1024 * 500 }, (function(id, error, stdout, stderr) {
+                var p = exec(util.format(cmd2, deviceCS[i].cs, NUM_MESSAGE_PER_DEVICE), { maxBuffer: 1024 * 500 }, (function(id, error, stdout, stderr) {
+
                     if (error) {
                         console.log("Error with " + id + "\n" + error);
                         stat.numDone++;
@@ -59,12 +69,22 @@ function main() {
                     var m1 = stdout.match(/Device Twin changes sampling rate/g);
                     var m2 = stdout.match(/Start to send D2C message/g);
                     var m3 = stdout.match(/Sending D2C message success/g);
+
+                    var totalConsumeTimeRegexp = /TotalTimeConsume: (\d*.\d*)/g;
+                    var m4 = totalConsumeTimeRegexp.exec(stdout);
+
+                    var getTwinTimeConsumeRegexp = /GetTwinTimeConsume: (\d*.\d*)/g;
+                    var m5 = getTwinTimeConsumeRegexp.exec(stdout);
+
                     if (!stat.devices[id]) {
                         stat.devices[id] = {};
                     }
                     stat.devices[id].changed_times = (m1 == null ? 0 : m1.length);
                     stat.devices[id].msg_sent = (m2 == null ? 0 : m2.length);
                     stat.devices[id].msg_respond = (m3 == null ? 0 : m3.length);
+
+                    stat.devices[id].totalConsumeTime = (m4 == null ? 0 : m4[1]);
+                    stat.devices[id].getTwinCosumeTime = (m5 == null ? 0 : m5[1]);
 
                     fs.writeFile("log/" + id + ".log", stdout, (err) => {
                         if (err) {
@@ -73,6 +93,11 @@ function main() {
                     });
                     if (stat.numDone == NUM_OF_DEVICES) {
                         //finished
+
+                        var afterSendTimeStamp = Date.now();
+
+                        var totalGetTwinConsumTime = 0;
+                        var totalConsumeTime = 0;
                         for (var d in stat.devices) {
                             if (!stat.changedTimes[stat.devices[d].changed_times]) {
                                 stat.changedTimes[stat.devices[d].changed_times] = 1;
@@ -89,16 +114,41 @@ function main() {
                             } else {
                                 stat.msgRespond[stat.devices[d].msg_respond]++;
                             }
+
+                            totalGetTwinConsumTime += parseFloat(stat.devices[d].getTwinCosumeTime);
+                            totalConsumeTime += parseFloat(stat.devices[d].totalConsumeTime);
                         }
+                        stat.avglGetTwinConsumTime = totalGetTwinConsumTime / NUM_OF_DEVICES;
+                        stat.avgConsumeTime = totalConsumeTime / NUM_OF_DEVICES;
+                        stat.totalConsumeTime = afterSendTimeStamp - beforeSendTimeStamp;
                         console.log(stat);
                         fs.writeFile("log/main.log", util.inspect(stat), () => {});
                     }
                 }).bind(this, deviceCS[i].id));
                 console.log(util.format("Device %s started. (%d/%d)", deviceCS[i].id, ++stat.numExec, NUM_OF_DEVICES));
+                processList.push(p);
             }
         }
     });
 }
+
+rl.question("Press <ENTER> to open all devices\n", (answer) => {
+    for (var p in processList) {
+        processList[p].stdin.write("any\n");
+    }
+    // rl.close();
+    rl.question("Press <ENTER> to stop all devices\n", (answer) => {
+        for (var p in processList) {
+            try {
+                processList[p].stdin.write('any');
+                processList[p].stdin.end();
+            } catch (e) {
+                console.log("Socket error : " + e.message);
+            }
+        }
+        rl.close();
+    })
+})
 
 function addDevice(num) {
     var devices = [];

@@ -242,8 +242,11 @@ namespace Microsoft.Azure.Devices.Client
             {
                 try
                 {
+                    var beforeStartGetTwinTimeStamp = DateTime.Now;
                     var twin = await deviceClient.GetTwinAsync();
+                    var afterGetTwinTimeStamp = DateTime.Now;
                     ((BaseDiagnosticProvider)_diagnosticProvider).SetSamplingConfigFromTwin(twin.Properties.Desired);
+                    Console.WriteLine($"Automatically obtain twin settings from server when start. GetTwinTimeConsume: {(afterGetTwinTimeStamp-beforeStartGetTwinTimeStamp).TotalMilliseconds}");
                     await deviceClient.SetDesiredPropertyUpdateCallback(((BaseDiagnosticProvider)_diagnosticProvider).OnDesiredPropertyChange, null);
                     break;
                 }

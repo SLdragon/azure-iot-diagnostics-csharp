@@ -151,7 +151,7 @@ namespace Microsoft.Azure.Devices.Client.DiagnosticProvider
                     SamplingRatePercentage = 0;
                     return;
                 }
-                Console.WriteLine($"Device Twin changes sampling rate from {SamplingRatePercentage} to {percentage}");
+                Console.WriteLine($"Device Twin changes sampling rate from {SamplingRatePercentage} to {percentage} | TimeStamp: {DateTime.Now}");
                 SamplingRatePercentage = percentage;
             }
         }

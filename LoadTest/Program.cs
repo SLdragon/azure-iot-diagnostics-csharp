@@ -38,12 +38,15 @@ namespace LoadTest
 
         public static async Task SendDeviceToCloudMessageAsync(CancellationToken cancelToken)
         {
-            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server, 50);
+            Console.ReadLine();
+            var diagnosticProvider = new ProbabilityDiagnosticProvider(SamplingRateSource.Server);
             var deviceClient = DeviceClientWrapper.CreateFromConnectionString(_deviceConnectionString, diagnosticProvider);
 
             const int avgWindSpeed = 10;
             var rand = new Random();
             var count = 0;
+            var beforeStartSendTimeStamp =DateTime.Now;
+            
             while (true)
             {
                 count++;
@@ -64,8 +67,9 @@ namespace LoadTest
                 try
                 {
                     var timeout = 1000000;
+                    
                     Console.WriteLine("{0} > Start to send D2C message: {1} | Count:{2}", DateTime.Now, messageString, count);
-
+                    
                     var task =  deviceClient.SendEventAsync(message);
                     
                     if (await Task.WhenAny(task, Task.Delay(timeout)) == task)
@@ -84,11 +88,14 @@ namespace LoadTest
 
                 if (count == _maxMessageCount)
                 {
-                    Console.WriteLine("All task complete!");
                     break;
                 }
                 await Task.Delay(500, cancelToken);
             }
+            var afterSendTimeStamp = DateTime.Now;
+            var totalTimeConsume = afterSendTimeStamp - beforeStartSendTimeStamp;
+            Console.WriteLine($"StartTime: {beforeStartSendTimeStamp} | EndTime: {afterSendTimeStamp} | TotalTimeConsume: {totalTimeConsume.TotalMilliseconds}");
+            Console.WriteLine("All task complete!");
         }
     }
 }
