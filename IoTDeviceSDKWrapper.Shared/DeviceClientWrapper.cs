@@ -278,7 +278,7 @@ namespace Microsoft.Azure.Devices.Client
                 mqttTransportSettings.Add(transportSetting);
             }
 
-            if (mqttTransportSettings == null)
+            if (mqttTransportSettings.Count == 0||mqttTransportSettings == null)
             {
                 throw new ProtocalNotSupportException("Cannot find MQTT protocal in transport settings: diagnostic only support MQTT protocal");
             }
