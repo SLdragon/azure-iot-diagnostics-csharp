@@ -2,6 +2,7 @@
 using Microsoft.Azure.Devices.Client.DiagnosticProvider;
 using Newtonsoft.Json;
 using System;
+using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Sample
 {
     class Program
     {
-        private static readonly string deviceConnectionString = "HostName=erich-testiotf1.azure-devices.net;DeviceId=test1;SharedAccessKey=P15BgaE2NkIFhAd6RKkI9gfNFgOJYA+H/O06xmY4/L4=";
+        private static string deviceConnectionString = null;
         private static volatile bool sendInvalidMessage = false;
         public static void Main(string[] args)
         {
@@ -19,8 +20,14 @@ namespace Sample
 
         private static void SendD2CMessage()
         {
-            var tokenSource = new CancellationTokenSource();
+            deviceConnectionString = ConfigurationManager.AppSettings.Get("deviceConnectionString");
+            if(string.IsNullOrEmpty(deviceConnectionString))
+            {
+                Console.WriteLine("Please provide valid deviceConnectionString value in config file");
+                return;
+            }
 
+            var tokenSource = new CancellationTokenSource();
             Task.Run(async() =>
             {
                 await SendDeviceToCloudMessageAsync(tokenSource.Token);
