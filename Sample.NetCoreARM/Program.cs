@@ -6,7 +6,7 @@ using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.DiagnosticProvider;
 using Newtonsoft.Json;
 
-namespace Sample.NetCore
+namespace Sample.NetCoreARM
 {
     class Program
     {
