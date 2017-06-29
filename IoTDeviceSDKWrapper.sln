@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTDeviceSDKWrapper.NetCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.NetCore", "Sample.NetCore\Sample.NetCore.csproj", "{EF6A86AA-3A2B-41BF-8075-4365E6CEF592}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTDeviceSDKWrapper.NetStandard", "IoTDeviceSDKWrapper.NetStandard\IoTDeviceSDKWrapper.NetStandard.csproj", "{FC13C46E-99F3-4A37-8067-8EAC83A00F09}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		IoTDeviceSDKWrapper.Shared\IoTDeviceSDKWrapper.Shared.projitems*{4dd8cada-9a21-42a9-8902-ead9e97d338e}*SharedItemsImports = 4
@@ -155,6 +157,22 @@ Global
 		{EF6A86AA-3A2B-41BF-8075-4365E6CEF592}.Release|x64.Build.0 = Release|Any CPU
 		{EF6A86AA-3A2B-41BF-8075-4365E6CEF592}.Release|x86.ActiveCfg = Release|Any CPU
 		{EF6A86AA-3A2B-41BF-8075-4365E6CEF592}.Release|x86.Build.0 = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|ARM.Build.0 = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|x64.Build.0 = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Debug|x86.Build.0 = Debug|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|ARM.ActiveCfg = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|ARM.Build.0 = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|x64.ActiveCfg = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|x64.Build.0 = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC13C46E-99F3-4A37-8067-8EAC83A00F09}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
