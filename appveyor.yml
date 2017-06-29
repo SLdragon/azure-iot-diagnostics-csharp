@@ -7,7 +7,7 @@ configuration: Release
 install:
 - cmd: nuget restore IoTDeviceSDKWrapper.sln
 build:
-  verbosity: detailed
+  verbosity: minimal
 after_test:
 - ps: .\PackAndPush.ps1
 artifacts:
