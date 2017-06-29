@@ -16,9 +16,13 @@
     <files>
         <file src="IoTDeviceSDKWrapper\bin\Release\IoTDeviceSDKWrapper.dll" target="lib\net45\IoTDeviceSDKWrapper.dll" />
         <file src="IoTDeviceSDKWrapper\bin\Release\IoTDeviceSDKWrapper.dll.config" target="lib\net45\IoTDeviceSDKWrapper.dll.config" />
+        <file src="IoTDeviceSDKWrapper.NetCore\bin\Release\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.deps.json" target="lib\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.deps.json" />
+        <file src="IoTDeviceSDKWrapper.NetCore\bin\Release\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.dll" target="lib\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.dll" />
+        <file src="IoTDeviceSDKWrapper.NetCore\bin\Release\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.pdb" target="lib\netcoreapp1.1\IoTDeviceSDKWrapper.NetCore.pdb" />
         <file src="IoTDeviceSDKWrapper.NetStandard\bin\Release\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.dll" target="lib\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.dll" />
-        <file src="IoTDeviceSDKWrapper.NetStandard\bin\Release\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" target="lib\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" />        
-        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper**" target="lib\uap10.0" />
-        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper**" target="lib\uap10.0" />
+        <file src="IoTDeviceSDKWrapper.NetStandard\bin\Release\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" target="lib\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" />
+        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper.UWP.dll" target="lib\uap10.0\IoTDeviceSDKWrapper.UWP.dll" />
+        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper.UWP.pdb" target="lib\uap10.0\IoTDeviceSDKWrapper.UWP.pdb" />
+        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper.UWP.pri" target="lib\uap10.0\IoTDeviceSDKWrapper.UWP.pri" />
     </files>
 </package>
