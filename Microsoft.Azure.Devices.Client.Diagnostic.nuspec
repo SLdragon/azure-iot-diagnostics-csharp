@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>Microsoft.Azure.Devices.Client.Diagnostic</id>
         <version>$version$</version>
@@ -14,7 +14,13 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="IoTDeviceSDKWrapper\bin\Release\IoTDeviceSDKWrapper.dll.config" target="lib\net45\IoTDeviceSDKWrapper.dll.config" />
         <file src="IoTDeviceSDKWrapper\bin\Release\IoTDeviceSDKWrapper.dll" target="lib\net45\IoTDeviceSDKWrapper.dll" />
+        <file src="IoTDeviceSDKWrapper\bin\Release\IoTDeviceSDKWrapper.dll.config" target="lib\net45\IoTDeviceSDKWrapper.dll.config" />
+        <file src="IoTDeviceSDKWrapper.NetStandard\bin\Debug\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.dll" target="lib\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.dll" />
+        <file src="IoTDeviceSDKWrapper.NetStandard\bin\Debug\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" target="lib\netstandard1.3\IoTDeviceSDKWrapper.NetStandard.pdb" />
+        <!--
+        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper**" target="lib\uap10.0" />
+        <file src="IoTDeviceSDKWrapper.UWP\bin\Release\IoTDeviceSDKWrapper**" target="lib\uap10.0" />
+        -->    
     </files>
 </package>

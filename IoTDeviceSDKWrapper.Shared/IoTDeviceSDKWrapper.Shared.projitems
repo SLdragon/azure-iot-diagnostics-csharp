@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>69e7832f-ea91-4039-a5a7-aeb4e9117954</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>IoTDeviceSDKWrapper.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DeviceClientWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiagnosticProvider\BaseDiagnosticProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiagnosticProvider\ContinuousDiagnosticProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiagnosticProvider\IDiagnosticProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DiagnosticProvider\ProbabilityDiagnosticProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\InvalidDiagTwinException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\PropertyConflictException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ProtocalNotSupportException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\SamplingPercentageOutOfRangeException.cs" />
+  </ItemGroup>
+</Project>
